@@ -268,7 +268,7 @@ export default function TrueCostAI() {
               disabled={!streaming || loading} 
               className="flex-1 px-4 py-3 rounded-lg border border-gray-300 text-black bg-white hover:bg-gray-50 disabled:opacity-50 transition-all duration-200 font-medium"
             >
-              {loading ? "Exposing the tea..." : "Spill the tea ☕️"}
+              {loading ? "Analyzing..." : "Find actual product cost"}
             </button>
             {result && (
               <button 
@@ -284,7 +284,7 @@ export default function TrueCostAI() {
                  <div className="rounded-xl overflow-hidden shadow-lg bg-white p-6 border border-gray-100">
            <h2 className="font-bold mb-4 text-lg sm:text-xl text-gray-900 border-b border-gray-200 pb-2">The Tea ☕️</h2>
            {error && <div className="text-red-700 text-sm bg-red-50 p-3 rounded-lg border border-red-200 font-medium">{error}</div>}
-           {!result && !error && <div className="text-gray-600 text-sm bg-gray-50 p-4 rounded-lg border border-gray-200">Point your camera at something and click "Spill the tea" to see what's really going on.</div>}
+           {!result && !error && <div className="text-gray-600 text-sm bg-gray-50 p-4 rounded-lg border border-gray-200">Point your camera at something and click "Find actual product cost" to see what's really going on.</div>}
           {result && (
             <div className="space-y-6 text-sm">
               {result.productName && (
