@@ -213,7 +213,7 @@ export default function TrueCostAI() {
   return (
     <div className="min-h-screen w-full flex flex-col p-4 gap-4 bg-white pb-20">
       <header className="w-full flex flex-col sm:flex-row sm:justify-between items-start sm:items-center">
-        <h1 className="text-xl sm:text-2xl font-bold">TrueCost AI 💸</h1>
+        <h1 className="text-xl sm:text-2xl font-bold">Product cost finder</h1>
         <p className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-0">Exposing the real cost of your faves</p>
       </header>
 
