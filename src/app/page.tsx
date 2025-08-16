@@ -282,7 +282,7 @@ export default function TrueCostAI() {
         </div>
 
                  <div className="rounded-xl overflow-hidden shadow-lg bg-white p-6 border border-gray-100">
-           <h2 className="font-bold mb-4 text-lg sm:text-xl text-gray-900 border-b border-gray-200 pb-2">The Tea ☕️</h2>
+           <h2 className="font-bold mb-4 text-lg sm:text-xl text-gray-900 border-b border-gray-200 pb-2">Product cost finder</h2>
            {error && <div className="text-red-700 text-sm bg-red-50 p-3 rounded-lg border border-red-200 font-medium">{error}</div>}
            {!result && !error && <div className="text-gray-600 text-sm bg-gray-50 p-4 rounded-lg border border-gray-200">Point your camera at something and click "Find actual product cost" to see what's really going on.</div>}
           {result && (
