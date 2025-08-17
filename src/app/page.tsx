@@ -1,6 +1,12 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Camera, DollarSign, TrendingUp, Leaf, AlertTriangle, RefreshCw } from "lucide-react";
 
 // Gen Z facts for loading screen
 const funFacts = [
@@ -211,246 +217,354 @@ export default function TrueCostAI() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col p-4 gap-4 bg-white pb-20">
-      <header className="w-full flex flex-col sm:flex-row sm:justify-between items-start sm:items-center">
-        <h1 className="text-xl sm:text-2xl font-bold">Product cost finder</h1>
-        <p className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-0">Exposing the real cost of your faves</p>
-      </header>
-
-      <section className="w-full flex flex-col gap-4 flex-1">
-        <div className="rounded-xl overflow-hidden border border-gray-200 bg-white p-3 flex flex-col items-center relative">
-          <div className="relative w-full">
-            <video ref={videoRef} className="w-full rounded-lg aspect-video object-cover" playsInline muted />
-            {loading && (
-              <div className="absolute inset-0 bg-black/80 flex items-center justify-center rounded-lg">
-                <div className="text-white text-center p-6 max-w-sm">
-                                     {/* Simple logo */}
-                   <div className="mb-6">
-                     <div className="text-sm text-gray-300">Exposing the tea on your product</div>
-                   </div>
-                  
-                  {/* Progress bar */}
-                  <div className="mb-6">
-                    <div className="flex justify-between text-xs mb-2">
-                      <span>Progress</span>
-                      <span>{Math.round(loadingProgress)}%</span>
-                    </div>
-                    <div className="w-full bg-gray-700 rounded-full h-1 overflow-hidden">
-                      <div 
-                        className="h-full bg-white rounded-full transition-all duration-300 ease-out"
-                        style={{ width: `${loadingProgress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  
-                                     {/* Fact */}
-                   <div className="mb-6">
-                     <div className="text-xs text-gray-400 mb-2">💡 The tea</div>
-                     <div className="text-sm leading-relaxed">
-                       {funFacts[currentFact]}
-                     </div>
-                   </div>
-                  
-                  {/* Simple loading dots */}
-                  <div className="flex justify-center space-x-2">
-                    <div className="w-1 h-1 bg-white rounded-full animate-pulse"></div>
-                    <div className="w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '200ms' }}></div>
-                    <div className="w-1 h-1 bg-white rounded-full animate-pulse" style={{ animationDelay: '400ms' }}></div>
-                  </div>
-                </div>
-              </div>
-            )}
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-6 max-w-4xl">
+        {/* Header */}
+        <header className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Product Cost Finder</h1>
+              <p className="text-muted-foreground mt-1">Exposing the real cost of your faves</p>
+            </div>
+            <Badge variant="secondary" className="w-fit">
+              <Camera className="w-3 h-3 mr-1" />
+              AI-Powered Analysis
+            </Badge>
           </div>
-          
-          <div className="w-full mt-3 flex gap-2">
-            <button 
-              onClick={analyzeFrame} 
-              disabled={!streaming || loading} 
-              className="flex-1 px-4 py-3 rounded-lg border border-gray-300 text-black bg-white hover:bg-gray-50 disabled:opacity-50 transition-all duration-200 font-medium"
-            >
-              {loading ? "Analyzing..." : "Find actual product cost"}
-            </button>
-            {result && (
-              <button 
-                onClick={reset} 
-                className="px-4 py-3 rounded-lg border border-gray-300 text-black bg-white hover:bg-gray-50 transition-colors"
-              >
-                Reset
-              </button>
-            )}
-          </div>
-        </div>
+        </header>
 
-                 <div className="rounded-xl overflow-hidden shadow-lg bg-white p-6 border border-gray-100">
-           <h2 className="font-bold mb-4 text-lg sm:text-xl text-gray-900 border-b border-gray-200 pb-2">Product cost finder</h2>
-           {error && <div className="text-red-700 text-sm bg-red-50 p-3 rounded-lg border border-red-200 font-medium">{error}</div>}
-           {!result && !error && <div className="text-gray-600 text-sm bg-gray-50 p-4 rounded-lg border border-gray-200">Point your camera at something and click "Find actual product cost" to see what's really going on.</div>}
-          {result && (
-            <div className="space-y-6 text-sm">
-              {result.productName && (
-                <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border border-purple-200">
-                  <div className="text-purple-700 font-semibold text-xs uppercase tracking-wide mb-1">Product</div>
-                  <div className="text-lg font-bold text-gray-900">{result.productName}</div>
-                </div>
-              )}
-              {result.category && (
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <div className="text-gray-700 font-semibold text-xs uppercase tracking-wide mb-1">Category</div>
-                  <div className="text-base font-medium text-gray-900">{result.category}</div>
-                </div>
-              )}
-              {Array.isArray(result.materials) && result.materials.length > 0 && (
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <div className="text-gray-700 font-semibold text-xs uppercase tracking-wide mb-2">Likely Materials</div>
-                  <ul className="list-disc ml-5 space-y-1">
-                    {result.materials.map((m: string, i: number) => (
-                      <li key={i} className="text-gray-900 font-medium">{m}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-                             {result.estimatedBOM && (
-                 <div className="p-5 rounded-lg bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 shadow-sm">
-                   <div className="text-red-800 font-bold text-sm uppercase tracking-wide mb-2">💸 What it actually costs to make</div>
-                   <div className="text-2xl font-black text-red-900 mb-2">
-                     ${result.estimatedBOM.lowUSD.toFixed(2)} – ${result.estimatedBOM.highUSD.toFixed(2)}
-                   </div>
-                   <div className="text-xs text-red-700 mt-2 leading-relaxed bg-red-100 p-2 rounded border border-red-200">{result.estimatedBOM.methodology}</div>
-                 </div>
-               )}
-              {result.marketPrice && result.marketPrice.lowUSD !== undefined && result.marketPrice.highUSD !== undefined && (
-                                 <div className="p-5 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-sm">
-                   <div className="text-blue-800 font-bold text-sm uppercase tracking-wide mb-2">💰 What they're charging you</div>
-                   <div className="text-2xl font-black text-blue-900 mb-2">
-                     ${Number(result.marketPrice.lowUSD || 0).toFixed(2)} – ${Number(result.marketPrice.highUSD || 0).toFixed(2)}
-                   </div>
-                   <div className="text-xs text-blue-700 mt-2 leading-relaxed bg-blue-100 p-2 rounded border border-blue-200">{result.marketPrice.notes || ''}</div>
-                 </div>
-              )}
-              {result.estimatedBOM && result.marketPrice && result.estimatedBOM.lowUSD !== undefined && result.estimatedBOM.highUSD !== undefined && result.marketPrice.lowUSD !== undefined && result.marketPrice.highUSD !== undefined && (
-                                 <div className="p-5 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 shadow-sm">
-                   <div className="text-green-800 font-bold text-sm uppercase tracking-wide mb-3">💀 The markup is crazy</div>
-                  <div className="space-y-3 text-sm">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="bg-white p-3 rounded border border-gray-200">
-                        <div className="text-gray-600 font-medium text-xs mb-1">Low BOM Cost</div>
-                        <div className="text-lg font-bold text-gray-900">${Number(result.estimatedBOM.lowUSD || 0).toFixed(2)}</div>
-                      </div>
-                      <div className="bg-white p-3 rounded border border-gray-200">
-                        <div className="text-gray-600 font-medium text-xs mb-1">High BOM Cost</div>
-                        <div className="text-lg font-bold text-gray-900">${Number(result.estimatedBOM.highUSD || 0).toFixed(2)}</div>
-                      </div>
-                      <div className="bg-white p-3 rounded border border-gray-200">
-                        <div className="text-gray-600 font-medium text-xs mb-1">Low Market Price</div>
-                        <div className="text-lg font-bold text-gray-900">${Number(result.marketPrice.lowUSD || 0).toFixed(2)}</div>
-                      </div>
-                      <div className="bg-white p-3 rounded border border-gray-200">
-                        <div className="text-gray-600 font-medium text-xs mb-1">High Market Price</div>
-                        <div className="text-lg font-bold text-gray-900">${Number(result.marketPrice.highUSD || 0).toFixed(2)}</div>
+        {/* Camera Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Camera className="w-5 h-5" />
+              Camera Feed
+            </CardTitle>
+            <CardDescription>
+              Point your camera at a product to analyze its true cost
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="relative">
+              <video 
+                ref={videoRef} 
+                className="w-full rounded-lg aspect-video object-cover border" 
+                playsInline 
+                muted 
+              />
+              
+              {loading && (
+                <div className="absolute inset-0 bg-black/80 flex items-center justify-center rounded-lg">
+                  <div className="text-white text-center p-8 max-w-md">
+                    <div className="mb-6">
+                      <div className="text-sm text-gray-300 mb-4">Exposing the tea on your product</div>
+                      <Progress value={loadingProgress} className="w-full" />
+                      <div className="flex justify-between text-xs mt-2">
+                        <span>Analyzing...</span>
+                        <span>{Math.round(loadingProgress)}%</span>
                       </div>
                     </div>
-                                         <div className="bg-gradient-to-r from-green-100 to-emerald-100 p-4 rounded-lg border border-green-300">
-                       <div className="flex justify-between items-center">
-                         <span className="text-green-800 font-bold text-base">They're taxing you:</span>
-                         <span className="text-green-900 font-black text-xl">
-                          {(() => {
-                            const lowBOM = Number(result.estimatedBOM.lowUSD || 0);
-                            const highBOM = Number(result.estimatedBOM.highUSD || 0);
-                            const lowMarket = Number(result.marketPrice.lowUSD || 0);
-                            const highMarket = Number(result.marketPrice.highUSD || 0);
-                            
-                            if (lowMarket <= 0 || highMarket <= 0) return 'N/A';
-                            
-                            const lowMargin = lowMarket > highBOM ? ((lowMarket - highBOM) / lowMarket * 100) : 0;
-                            const highMargin = highMarket > lowBOM ? ((highMarket - lowBOM) / highMarket * 100) : 0;
-                            
-                            return `${lowMargin.toFixed(1)}% - ${highMargin.toFixed(1)}%`;
-                          })()}
-                        </span>
+                    
+                    <div className="mb-6">
+                      <div className="text-xs text-gray-400 mb-2">💡 The tea</div>
+                      <div className="text-sm leading-relaxed bg-white/10 p-3 rounded">
+                        {funFacts[currentFact]}
                       </div>
+                    </div>
+                    
+                    <div className="flex justify-center space-x-2">
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '200ms' }}></div>
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse" style={{ animationDelay: '400ms' }}></div>
                     </div>
                   </div>
                 </div>
-              )}
-              {result.environmentalImpact && (
-                <div className="p-5 rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 shadow-sm">
-                  <div className="text-emerald-800 font-bold text-sm uppercase tracking-wide mb-3">🌱 Environmental Impact</div>
-                  <div className="space-y-4">
-                    {result.environmentalImpact.carbonFootprint && result.environmentalImpact.carbonFootprint.kgCO2e !== undefined && (
-                      <div className="bg-white p-4 rounded-lg border border-emerald-200">
-                        <div className="text-emerald-700 font-semibold text-sm mb-2">Carbon Footprint</div>
-                        <div className="text-2xl font-black text-emerald-900 mb-2">
-                          {Number(result.environmentalImpact.carbonFootprint.kgCO2e || 0).toFixed(1)} kg CO₂e
-                        </div>
-                        <div className="text-xs text-emerald-700 bg-emerald-50 p-2 rounded border border-emerald-200 leading-relaxed">
-                          {result.environmentalImpact.carbonFootprint.methodology || ''}
-                        </div>
-                      </div>
-                    )}
-                    {result.environmentalImpact.sustainabilityScore !== undefined && (
-                      <div className="bg-white p-4 rounded-lg border border-emerald-200">
-                        <div className="text-emerald-700 font-semibold text-sm mb-2">Sustainability Score</div>
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="text-2xl font-black text-emerald-900">
-                            {Number(result.environmentalImpact.sustainabilityScore || 0).toFixed(0)}/100
-                          </div>
-                          <div className="flex-1 bg-gray-200 rounded-full h-3 shadow-inner">
-                            <div 
-                              className="bg-gradient-to-r from-emerald-500 to-teal-500 h-3 rounded-full transition-all duration-300 shadow-sm"
-                              style={{ width: `${Math.min(100, Math.max(0, Number(result.environmentalImpact.sustainabilityScore || 0)))}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {result.environmentalImpact.recyclability && result.environmentalImpact.recyclability.percentage !== undefined && (
-                      <div className="bg-white p-4 rounded-lg border border-emerald-200">
-                        <div className="text-emerald-700 font-semibold text-sm mb-2">Recyclability</div>
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="text-2xl font-black text-emerald-900">
-                            {Number(result.environmentalImpact.recyclability.percentage || 0).toFixed(0)}%
-                          </div>
-                          <div className="flex-1 bg-gray-200 rounded-full h-3 shadow-inner">
-                            <div 
-                              className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full transition-all duration-300 shadow-sm"
-                              style={{ width: `${Math.min(100, Math.max(0, Number(result.environmentalImpact.recyclability.percentage || 0)))}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                        <div className="text-xs text-emerald-700 bg-emerald-50 p-2 rounded border border-emerald-200 leading-relaxed">
-                          {result.environmentalImpact.recyclability.notes || ''}
-                        </div>
-                      </div>
-                    )}
-                    {result.environmentalImpact.environmentalNotes && (
-                      <div className="text-sm text-emerald-800 bg-emerald-100 p-3 rounded-lg border border-emerald-300 font-medium leading-relaxed">
-                        {result.environmentalImpact.environmentalNotes}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-              {result.retailEstimates && (
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <div className="text-gray-700 font-semibold text-xs uppercase tracking-wide mb-2">Retail Context</div>
-                  <div className="text-sm text-gray-900 leading-relaxed bg-white p-3 rounded border border-gray-200">{result.retailEstimates.commentary}</div>
-                </div>
-              )}
-              {typeof result.confidence === "number" && (
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <div className="text-gray-700 font-semibold text-xs uppercase tracking-wide mb-2">Confidence</div>
-                  <div className="text-lg font-bold text-gray-900">{Math.round(result.confidence * 100)}%</div>
-                </div>
-              )}
-              {result.caution && (
-                <div className="text-sm text-amber-800 bg-gradient-to-r from-amber-50 to-yellow-50 p-4 rounded-lg border-2 border-amber-200 font-medium leading-relaxed shadow-sm">{result.caution}</div>
               )}
             </div>
-          )}
-        </div>
-      </section>
+            
+            <div className="flex gap-3 mt-4">
+              <Button 
+                onClick={analyzeFrame} 
+                disabled={!streaming || loading}
+                className="flex-1"
+                size="lg"
+              >
+                {loading ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <DollarSign className="w-4 h-4 mr-2" />
+                    Find Actual Cost
+                  </>
+                )}
+              </Button>
+              {result && (
+                <Button 
+                  onClick={reset} 
+                  variant="outline"
+                  size="lg"
+                >
+                  Reset
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
-            <canvas ref={canvasRef} className="hidden" />
+        {/* Results Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Analysis Results</CardTitle>
+            <CardDescription>
+              {error && "An error occurred during analysis"}
+              {!result && !error && "Point your camera at something and click 'Find Actual Cost' to see what's really going on."}
+              {result && "Here's the breakdown of your product's true cost"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <div className="flex items-center gap-2 p-4 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive">
+                <AlertTriangle className="w-4 h-4" />
+                <span className="font-medium">{error}</span>
+              </div>
+            )}
+            
+            {result && (
+              <div className="space-y-6">
+                {/* Product Info */}
+                {result.productName && (
+                  <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg text-purple-900">{result.productName}</CardTitle>
+                      {result.category && (
+                        <Badge variant="outline" className="w-fit">
+                          {result.category}
+                        </Badge>
+                      )}
+                    </CardHeader>
+                  </Card>
+                )}
+
+                {/* Materials */}
+                {Array.isArray(result.materials) && result.materials.length > 0 && (
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base">Likely Materials</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="flex flex-wrap gap-2">
+                        {result.materials.map((m: string, i: number) => (
+                          <Badge key={i} variant="secondary">
+                            {m}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* BOM Cost */}
+                {result.estimatedBOM && (
+                  <Card className="bg-gradient-to-br from-red-50 to-orange-50 border-red-200">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg text-red-900 flex items-center gap-2">
+                        <DollarSign className="w-5 h-5" />
+                        What it actually costs to make
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-3xl font-bold text-red-900 mb-3">
+                        ${result.estimatedBOM.lowUSD.toFixed(2)} – ${result.estimatedBOM.highUSD.toFixed(2)}
+                      </div>
+                      <div className="text-sm text-red-700 bg-red-100 p-3 rounded border border-red-200">
+                        {result.estimatedBOM.methodology}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Market Price */}
+                {result.marketPrice && result.marketPrice.lowUSD !== undefined && result.marketPrice.highUSD !== undefined && (
+                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg text-blue-900 flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5" />
+                        What they're charging you
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="text-3xl font-bold text-blue-900 mb-3">
+                        ${Number(result.marketPrice.lowUSD || 0).toFixed(2)} – ${Number(result.marketPrice.highUSD || 0).toFixed(2)}
+                      </div>
+                      {result.marketPrice.notes && (
+                        <div className="text-sm text-blue-700 bg-blue-100 p-3 rounded border border-blue-200">
+                          {result.marketPrice.notes}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Markup Analysis */}
+                {result.estimatedBOM && result.marketPrice && result.estimatedBOM.lowUSD !== undefined && result.estimatedBOM.highUSD !== undefined && result.marketPrice.lowUSD !== undefined && result.marketPrice.highUSD !== undefined && (
+                  <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg text-green-900">💀 The markup is crazy</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="bg-white p-4 rounded-lg border">
+                          <div className="text-sm text-muted-foreground mb-1">Low BOM Cost</div>
+                          <div className="text-xl font-bold">${Number(result.estimatedBOM.lowUSD || 0).toFixed(2)}</div>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg border">
+                          <div className="text-sm text-muted-foreground mb-1">High BOM Cost</div>
+                          <div className="text-xl font-bold">${Number(result.estimatedBOM.highUSD || 0).toFixed(2)}</div>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg border">
+                          <div className="text-sm text-muted-foreground mb-1">Low Market Price</div>
+                          <div className="text-xl font-bold">${Number(result.marketPrice.lowUSD || 0).toFixed(2)}</div>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg border">
+                          <div className="text-sm text-muted-foreground mb-1">High Market Price</div>
+                          <div className="text-xl font-bold">${Number(result.marketPrice.highUSD || 0).toFixed(2)}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gradient-to-r from-green-100 to-emerald-100 p-4 rounded-lg border border-green-300">
+                        <div className="flex justify-between items-center">
+                          <span className="text-green-800 font-bold">They're taxing you:</span>
+                          <span className="text-green-900 font-black text-2xl">
+                            {(() => {
+                              const lowBOM = Number(result.estimatedBOM.lowUSD || 0);
+                              const highBOM = Number(result.estimatedBOM.highUSD || 0);
+                              const lowMarket = Number(result.marketPrice.lowUSD || 0);
+                              const highMarket = Number(result.marketPrice.highUSD || 0);
+                              
+                              if (lowMarket <= 0 || highMarket <= 0) return 'N/A';
+                              
+                              const lowMargin = lowMarket > highBOM ? ((lowMarket - highBOM) / lowMarket * 100) : 0;
+                              const highMargin = highMarket > lowBOM ? ((highMarket - lowBOM) / highMarket * 100) : 0;
+                              
+                              return `${lowMargin.toFixed(1)}% - ${highMargin.toFixed(1)}%`;
+                            })()}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Environmental Impact */}
+                {result.environmentalImpact && (
+                  <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg text-emerald-900 flex items-center gap-2">
+                        <Leaf className="w-5 h-5" />
+                        Environmental Impact
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0 space-y-4">
+                      {result.environmentalImpact.carbonFootprint && result.environmentalImpact.carbonFootprint.kgCO2e !== undefined && (
+                        <div className="bg-white p-4 rounded-lg border border-emerald-200">
+                          <div className="text-emerald-700 font-semibold text-sm mb-2">Carbon Footprint</div>
+                          <div className="text-2xl font-bold text-emerald-900 mb-2">
+                            {Number(result.environmentalImpact.carbonFootprint.kgCO2e || 0).toFixed(1)} kg CO₂e
+                          </div>
+                          <div className="text-sm text-emerald-700 bg-emerald-50 p-2 rounded border border-emerald-200">
+                            {result.environmentalImpact.carbonFootprint.methodology || ''}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {result.environmentalImpact.sustainabilityScore !== undefined && (
+                        <div className="bg-white p-4 rounded-lg border border-emerald-200">
+                          <div className="text-emerald-700 font-semibold text-sm mb-2">Sustainability Score</div>
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="text-2xl font-bold text-emerald-900">
+                              {Number(result.environmentalImpact.sustainabilityScore || 0).toFixed(0)}/100
+                            </div>
+                            <Progress 
+                              value={Math.min(100, Math.max(0, Number(result.environmentalImpact.sustainabilityScore || 0)))} 
+                              className="flex-1"
+                            />
+                          </div>
+                        </div>
+                      )}
+                      
+                      {result.environmentalImpact.recyclability && result.environmentalImpact.recyclability.percentage !== undefined && (
+                        <div className="bg-white p-4 rounded-lg border border-emerald-200">
+                          <div className="text-emerald-700 font-semibold text-sm mb-2">Recyclability</div>
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="text-2xl font-bold text-emerald-900">
+                              {Number(result.environmentalImpact.recyclability.percentage || 0).toFixed(0)}%
+                            </div>
+                            <Progress 
+                              value={Math.min(100, Math.max(0, Number(result.environmentalImpact.recyclability.percentage || 0)))} 
+                              className="flex-1"
+                            />
+                          </div>
+                          {result.environmentalImpact.recyclability.notes && (
+                            <div className="text-sm text-emerald-700 bg-emerald-50 p-2 rounded border border-emerald-200">
+                              {result.environmentalImpact.recyclability.notes}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      {result.environmentalImpact.environmentalNotes && (
+                        <div className="text-sm text-emerald-800 bg-emerald-100 p-3 rounded-lg border border-emerald-300 font-medium">
+                          {result.environmentalImpact.environmentalNotes}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Additional Info */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {result.retailEstimates && (
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-base">Retail Context</CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <p className="text-sm text-muted-foreground">
+                          {result.retailEstimates.commentary}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                  
+                  {typeof result.confidence === "number" && (
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-base">Confidence</CardTitle>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="text-2xl font-bold">{Math.round(result.confidence * 100)}%</div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+
+                {/* Caution */}
+                {result.caution && (
+                  <div className="flex items-start gap-2 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-800">
+                    <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                    <span className="font-medium">{result.caution}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <canvas ref={canvasRef} className="hidden" />
+      </div>
     </div>
   );
 }
